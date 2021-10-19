@@ -1,0 +1,87 @@
+#links {
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+a {
+  margin: 0 1rem;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 20px;
+  color: rgb(25, 122, 202);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+
+#root {
+  background: lightblue;
+  position: fixed;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  cursor: url('https://uploads.codesandbox.io/uploads/user/b3e56831-8b98-4fee-b941-0e27f39883ab/Ad1_-cursor.png') 39 39, auto;
+}
+
+#root > div {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#root > div > div {
+  background-color: white;
+  background-size: auto 85%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 45vh;
+  max-width: 300px;
+  height: 85vh;
+  max-height: 570px;
+  will-change: transform;
+  border-radius: 10px;
+  box-shadow: 0 12.5px 100px -10px rgba(50, 50, 73, 0.4), 0 10px 10px -10px rgba(50, 50, 73, 0.3);
+}
+
+
+.demo4 {
+  width: 100%;
+  height: 100%;
+  margin-top: 10%;
+}
+
+.trails-main {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.trails-text {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  line-height: 80px;
+  color: rgb(66, 61, 63);
+  font-size: 5em;
+  font-weight: 800;
+  text-transform: uppercase;
+  will-change: transform, opacity;
+  overflow: hidden;
+}
+
+.trails-text > div {
+  overflow: hidden;
+}
+
