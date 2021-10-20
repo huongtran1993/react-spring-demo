@@ -1,160 +1,50 @@
-import React, { useState } from "react";
-import ReactDOM from "react-dom";
+import React, { useState } from 'react'
+import { useSprings, animated, to as interpolate } from 'react-spring'
+import { useDrag } from 'react-use-gesture'
 
-import { ChevronRight, ChevronLeft } from "react-feather";
-import { animated, useTransition, useSprings } from "react-spring";
-import styled, { ThemeProvider } from "styled-components";
-import { Box } from "./Demo2/Box";
-import { Container } from "./Demo2/Container";
-import { Heading } from "./Demo2/Heading";
-import { Typography } from "./Demo2/Typography";
-import { Flex } from "./Demo2/Flex";
-import { theme } from "./Demo2/theme";
-import { slides } from "./Demo2/slides";
+const cards = [
+  './blastoise-card.jpeg',
+  './Ponyta.jpeg',
+  './squirtle.jpeg',
+  './eeve.jpeg',
+  './pikachu.jpeg'
+]
 
-// import "../../ui/molecules/global-styles/global.css";
+// Helper funs to generate values that are later being inserted into css
+const to = i => ({ x: 0, y: i * -4, scale: 1, rot: -10 + Math.random() * 20, delay: i * 100 })
+const from = i => ({ x: 0, rot: 0, scale: 1.5, y: -1000 })
+// Helper fn to insert rotation and scale into a css transform
+const trans = (r, s) => `perspective(1500px) rotateX(30deg) rotateY(${r / 10}deg) rotateZ(${r}deg) scale(${s})`
 
-
-const blue = theme.colors.brand;
-const text100 = theme.colors.text100;
-const text500 = theme.colors.text500;
-
-const sliderHeight = 350;
-
-const Slide = styled(animated(Flex))``;
-Slide.defaultProps = {
-  position: "absolute",
-  justifyContent: "flex-end",
-  height: sliderHeight,
-  width: "96.5%",
-  backgroundSize: "cover",
-  backgroundPosition: "center center",
-  backgroundRepeat: "no-repeat",
-  willChange: "opacity"
-};
-
-const SlideText = styled(animated(Flex))``;
-SlideText.defaultProps = {
-  flexDirection: "column",
-  width: [1, null, null, 1 / 2],
-  alignSelf: "flex-end",
-  backgroundColor: "rgba(255, 255, 255, 0.6)",
-  p: 2,
-  m: [0, null, null, 2]
-};
-
-const ControlsWrap = styled(Flex)``;
-ControlsWrap.defaultProps = {
-  justifyContent: "center",
-  alignItems: "center",
-  textAlign: "center"
-};
-
-const Control = styled(Flex)`
-  cursor: pointer;
-`;
-Control.defaultProps = {
-  background: "#c6c6c6",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: "50%",
-  size: [24, null, 36]
-};
-
-const Bullet = styled(animated(Control))``;
-Bullet.defaultProps = {
-  mx: [1, null, 2],
-  color: "text500"
-};
-
-const Arrow = styled(Control)``;
-Arrow.defaultProps = {
-  mx: [1, null, 6]
-};
-
-const Demo2 = () => {
-  const [[index, dir], setIndex] = useState([0, 0]);
-
-  const slideLeft = () =>
-    setIndex([(index - 1 + slides.length) % slides.length, -1]);
-  const slideRight = () => setIndex([(index + 1) % slides.length, 1]);
-
-  const transitions = useTransition(slides[index], {
-    from: {
-      opacity: 0,
-      transform: `translate3d(${dir === 1 ? 100 : -100}%,0,0) scale(0.5)`
-    },
-    enter: {
-      opacity: 1,
-      transform: "translate3d(0%,0,0) scale(1)",
-      height: 650
-    },
-    leave: {
-      opacity: 0,
-      transform: `translate3d(${dir === 1 ? -100 : 100}%,0,0) scale(0.5)`
-    }
-  });
-
-  const bulletSprings = useSprings(
-    slides.length,
-    slides.map((item, i) => ({
-      border: "2px solid",
-      borderColor: index === i ? blue : text100,
-      background: index === i ? "rgba(0,0,0,0)" : "#c6c6c6",
-      color: index === i ? blue : text500,
-      from: {
-        border: "2px solid",
-        borderColor: text100,
-        color: text500
-      }
-    }))
-  );
-
+function Deck() {
+  const [gone] = useState(() => new Set()) // The set flags all the cards that are flicked out
+  const [props, set] = useSprings(cards.length, (i) => ({ ...to(i), from: from(i) })) // Create a bunch of springs using the helpers above
+  // Create a gesture, we're interested in down-state, delta (current-pos - click-pos), direction and velocity
+  const bind = useDrag(({ args: [index], down, movement: [mx], direction: [xDir], velocity }) => {
+    const trigger = velocity > 0.2 // If you flick hard enough it should trigger the card to fly out
+    const dir = xDir < 0 ? -1 : 1 // Direction should either point left or right
+    if (!down && trigger) gone.add(index) // If button/finger's up and trigger velocity is reached, we flag the card ready to fly out
+    set((i) => {
+      if (index !== i) return // We're only interested in changing spring-data for the current spring
+      const isGone = gone.has(index)
+      const x = isGone ? (200 + window.innerWidth) * dir : down ? mx : 0 // When a card is gone it flys out left or right, otherwise goes back to zero
+      const rot = mx / 100 + (isGone ? dir * 10 * velocity : 0) // How much the card tilts, flicking it harder makes it rotate faster
+      const scale = down ? 1.4 : 1 // Active cards lift up a bit
+      return { x, rot, scale, delay: undefined, config: { friction: 50, tension: down ? 800 : isGone ? 200 : 500 } }
+    })
+    if (!down && gone.size === cards.length) setTimeout(() => gone.clear() || set((i) => to(i)), 600)
+  })
+  // Now we're just mapping the animated values to our view. This component only renders once
   return (
-    <ThemeProvider theme={theme}>
-      <Box bg="bg100" minHeight="100vh" py={1}>
-        <Container>
-          <Box height={sliderHeight + 480}>
-            <Box position="relative">
-              {transitions((props, item) => (
-                <Box>
-                  <Slide
-                    style={props}
-                    background={`url(${item.url}?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940)`}
-                  >
-                    <SlideText style={{width: '100%'}}>
-                      <Typography fontWeight={2} fontSize={4}>
-                        {item.title}
-                      </Typography>
-                      {item.text}
-                    </SlideText>
-                  </Slide>
-                </Box>
-              ))}
-              <ControlsWrap pt={sliderHeight + 350}>
-                <Arrow onClick={() => slideLeft()}>
-                  <ChevronLeft />
-                </Arrow>
-                {bulletSprings.map((props, i) => (
-                  <Flex
-                    key={i}
-                    onClick={() =>
-                      setIndex((prevState) => [i, i > prevState[0] ? 1 : -1])
-                    }
-                  >
-                    <Bullet style={props}>{i + 1}</Bullet>
-                  </Flex>
-                ))}
-                <Arrow onClick={() => slideRight()}>
-                  <ChevronRight />
-                </Arrow>
-              </ControlsWrap>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-    </ThemeProvider>
-  );
-}
+    <div id='root'>
+      {props.map(({ x, y, rot, scale }, i) => (
+        <animated.div key={i} style={{ transform: interpolate([x, y], (x, y) => `translate3d(${x}px,${y}px,0)`) }}>
+          {/* This is the card itself, we're binding our gesture to it (and inject its index so we know which is which) */}
+          <animated.div {...bind(i)} style={{ transform: interpolate([rot, scale], trans), backgroundImage: `url(${cards[i]})` }} />
+        </animated.div>
+      ))}
+    </div>
+  )
+};
 
-export default Demo2;
+export default Deck;

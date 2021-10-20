@@ -43,6 +43,8 @@ const App = () => {
 };
 
 const Landing = () => {
+  //useSpring: turn defined values into animated values
+  //Spring comes with two props: 'from' (initial position) & 'to' (end position of the animation).
   const styles = useSpring({
     loop: true,
     to: [
@@ -58,11 +60,12 @@ const Landing = () => {
       { opacity: 0.1, color: '#99bcf0' },
       { opacity: 0, color: '#b1caf0' },
     ],
-    from: { opacity: 0, color: '#021838' },
+    from: { opacity: 0, color: 'red' },
   })
   return (
     <div>
       <div style={{ fontSize: '5rem', height: '100%', textAlign: 'center', padding: '4rem 0'}}>
+        {/* use 'animated' to extend the native element/React component to receive animated values */}
         <animated.div style={styles}>React Spring Demos</animated.div>
       </div>
       <div>
@@ -70,21 +73,23 @@ const Landing = () => {
         <p style={{ fontSize: '1.5rem', padding: '1rem'}}>- is a spring-physics based animation library that can power UI related animation in React</p>
         <a style={{ fontSize: '1.5rem'}} href='https://react-spring.io/'>https://react-spring.io/</a>
         <p style={{ fontSize: '1.5rem', paddingLeft: '1rem'}}>- has five major hooks at the moment:</p>
-        <p style={{ fontSize: '1.2rem', paddingLeft: '1.5rem'}}>
-          1. useSpring – a single animation that changes the animation state a -> b
-        </p>
-        <p style={{ fontSize: '1.2rem', paddingLeft: '1.5rem'}}>
-          2. useSprings – multiple animations that also change the animation state a -> b
-        </p>
-        <p style={{ fontSize: '1.2rem', paddingLeft: '1.5rem'}}>
-          3. useTrail – multiple animations with a single data set where each subequent animation trails behind the previous one
-        </p>
-        <p style={{ fontSize: '1.2rem', paddingLeft: '1.5rem'}}>
-          4. useTransition – for mount/unmount transitions
-        </p>
-        <p style={{ fontSize: '1.2rem', paddingLeft: '1.5rem'}}>
-          5. useChain – to chain multiple animations together
-        </p>
+        <div style={{ fontSize: '1.2rem', paddingLeft: '1.5rem'}}>
+          <p>
+            1. useSpring – a single animation that changes the animation state a -> b
+          </p>
+          <p>
+            2. useSprings – multiple animations that also change the animation state a -> b
+          </p>
+          <p>
+            3. useTrail – multiple animations with a single data set where each subequent animation trails behind the previous one
+          </p>
+          <p>
+            4. useTransition – for mount/unmount transitions
+          </p>
+          <p>
+            5. useChain – to chain multiple animations together
+          </p>
+        </div>
         <p style={{ fontSize: '1.5rem', paddingLeft: '1rem'}}>- has Parallax and ParallaxLayer components to create parallax effect</p>
       </div>
     </div>
