@@ -60,12 +60,12 @@ const Landing = () => {
       { opacity: 0.1, color: '#99bcf0' },
       { opacity: 0, color: '#b1caf0' },
     ],
-    from: { opacity: 0, color: 'red' },
+    from: { opacity: 1, color: 'red' },
   })
   return (
     <div>
       <div style={{ fontSize: '5rem', height: '100%', textAlign: 'center', padding: '4rem 0'}}>
-        {/* use 'animated' to extend the native element/React component to receive animated values */}
+        {/* use 'animated' module to extend the native element/React component to receive animated values */}
         <animated.div style={styles}>React Spring Demos</animated.div>
       </div>
       <div>
@@ -81,7 +81,7 @@ const Landing = () => {
             2. useSprings – multiple animations that also change the animation state a -> b
           </p>
           <p>
-            3. useTrail – multiple animations with a single data set where each subequent animation trails behind the previous one
+            3. useTrail – multiple animations with a single data set where each spring follows the previous one (use for staggered animations)
           </p>
           <p>
             4. useTransition – for mount/unmount transitions
